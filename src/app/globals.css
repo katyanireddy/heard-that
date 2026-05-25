@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6ebd7;
+  --foreground: #2a1408;
+}
+
+@theme {
+  --font-display: "Cooper Black", "Arial Black", "Trebuchet MS", sans-serif;
+  --font-body: "Trebuchet MS", "Verdana", sans-serif;
+  --font-script: "Brush Script MT", "Segoe Script", cursive;
+
+  --color-cream: #f8e5c2;
+  --color-chai: #d9b06a;
+  --color-mango: #cb8558;
+  --color-jam: #6f2637;
+  --color-ink: #2a1408;
+  --color-lime: #b8c786;
+  --color-aqua: #8fb7b0;
+  --color-blush: #dfa7b8;
+  --color-violet: #7d5f82;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-wobble: wobble 2.5s ease-in-out infinite;
+  --animate-bounce-soft: bounce-soft 4s ease-in-out infinite;
+  --animate-marquee: marquee 24s linear infinite;
+  --animate-shimmer: shimmer 3.5s ease-in-out infinite;
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-14px) rotate(2deg);
+    }
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+  }
+
+  @keyframes wobble {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    30% {
+      transform: rotate(-3deg);
+    }
+    60% {
+      transform: rotate(3deg);
+    }
+  }
+
+  @keyframes bounce-soft {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+    }
+    50% {
+      filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.55));
+    }
+    100% {
+      filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+    }
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), sans-serif;
+  scroll-behavior: smooth;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: #dfbf78;
+  color: #2a1408;
+}
+
+.retro-grid {
+  background-image:
+    radial-gradient(circle at 2px 2px, rgba(42, 20, 8, 0.16) 1.5px, transparent 0),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+  background-size: 24px 24px, 100% 100%;
+}
+
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.2) 0.8px, transparent 0),
+    radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.16) 0.7px, transparent 0);
+  background-size: 4px 4px, 3px 3px;
+  opacity: 0.22;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+
+.paper-card {
+  border: 3px solid #2a1408;
+  box-shadow: 6px 6px 0 #2a1408;
+  border-radius: 1.25rem;
+}
+
+.ticket-edge {
+  position: relative;
+}
+
+.ticket-edge::before,
+.ticket-edge::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--background);
+  border: 3px solid #2a1408;
+  transform: translateY(-50%);
+}
+
+.ticket-edge::before {
+  left: -15px;
+}
+
+.ticket-edge::after {
+  right: -15px;
+}
+
+.blob-shape {
+  clip-path: polygon(11% 7%, 87% 0, 98% 28%, 100% 76%, 83% 99%, 26% 95%, 0 74%, 2% 26%);
+}
+
+.sticker {
+  border: 2px solid #2a1408;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 4px 4px 0 #2a1408;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}

@@ -32,6 +32,11 @@ export function HeroSection({ event }: { event: EventItem }) {
 
   return (
     <section className="relative overflow-hidden px-4 pb-14 pt-10 md:px-8 md:pt-16">
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute left-[20%] top-[30%] h-2 w-2 rounded-full bg-cream/40 animate-pulse" />
+<div className="absolute right-[25%] top-[20%] h-3 w-3 rounded-full bg-lime/30 animate-pulse" />
+<div className="absolute bottom-[25%] left-[40%] h-2 w-2 rounded-full bg-aqua/40 animate-pulse" />
+</div>
       <div className="noise-overlay" />
       <div className="relative mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.2fr_0.8fr]">
         <div>
@@ -46,7 +51,7 @@ export function HeroSection({ event }: { event: EventItem }) {
             <br />
             <span className="hero-word inline-block text-jam">Come make friends offline.</span>
             <br />
-            <span className="hero-word inline-block text-violet">Curated nights.</span>
+            <span className="hero-word inline-block text-violet">For people who miss feeling excited to go out.</span>
           </h1>
 
           <p className="mt-4 max-w-2xl text-lg leading-relaxed md:text-xl">
@@ -57,19 +62,25 @@ export function HeroSection({ event }: { event: EventItem }) {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               href="/events"
-              className="rounded-full border-[3px] border-ink bg-lime px-6 py-3 text-sm font-black uppercase tracking-wide shadow-[5px_5px_0_#2a1408] transition hover:-translate-y-1"
+              className="rounded-full border-[3px] border-ink bg-lime px-6 py-3 text-sm font-black uppercase tracking-wide shadow-[5px_5px_0_#2a1408] transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
             >
+              
               Browse Upcoming Events
             </Link>
             <a
               href="https://chat.whatsapp.com"
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border-[3px] border-ink bg-aqua px-6 py-3 text-sm font-black uppercase tracking-wide shadow-[5px_5px_0_#2a1408] transition hover:-translate-y-1"
+              className="rounded-full border-[3px] border-ink bg-aqua px-6 py-3 text-sm font-black uppercase tracking-wide shadow-[5px_5px_0_#2a1408] transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
             >
               Join WhatsApp Community
             </a>
+            
           </div>
+          <p className="mt-4 text-sm font-medium text-ink/70 italic">
+  currently assembling emotionally unstable extroverts...
+</p>
+
 
           <div className="mt-4 flex flex-wrap gap-2">
             {socialLinks.map((social) => (
@@ -88,6 +99,19 @@ export function HeroSection({ event }: { event: EventItem }) {
           <div className="mt-8 rounded-[1.4rem] border-[3px] border-ink bg-cream p-5 shadow-[8px_8px_0_#2a1408] md:max-w-xl">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-jam">Most Recent Upcoming Event</p>
             <h3 className="mt-2 font-display text-3xl uppercase leading-tight">{event.title}</h3>
+            <div className="mt-4 flex flex-wrap gap-2">
+  <span className="rounded-full bg-blush px-3 py-1 text-xs font-bold uppercase border-2 border-ink">
+    chaos level: 8/10
+  </span>
+
+  <span className="rounded-full bg-lime px-3 py-1 text-xs font-bold uppercase border-2 border-ink">
+    best for overthinkers
+  </span>
+
+  <span className="rounded-full bg-aqua px-3 py-1 text-xs font-bold uppercase border-2 border-ink">
+    social battery friendly
+  </span>
+</div>
             <p className="mt-2 text-sm font-semibold">{formatDateTime(event.dateTime)}</p>
             <p className="text-sm">{event.location}</p>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -100,45 +124,107 @@ export function HeroSection({ event }: { event: EventItem }) {
           </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30, rotate: -2 }}
-          animate={{ opacity: 1, y: 0, rotate: 0 }}
-          transition={{ duration: 0.7, delay: 0.25 }}
-          className="relative rounded-[2rem] border-4 border-ink bg-gradient-to-br from-jam via-violet to-chai p-6 shadow-[10px_10px_0_#2a1408]"
-        >
-          <div className="noise-overlay" />
-          <div className="relative">
-            <p className="font-script text-3xl text-cream">Tonight&apos;s vibe</p>
-            <p className="font-display text-4xl uppercase text-cream">Chai + Chaos + Comfort</p>
-            <p className="mt-3 text-base text-cream/90">
-              Cozy curated events for people who love board games, movies, nostalgia, random conversations,
-              psychology, art, and cafe hopping.
-            </p>
-            <div className="mt-6 h-px bg-cream/40" />
-            <p className="mt-4 text-sm font-bold uppercase tracking-[0.12em] text-chai">Location: Bangalore, India</p>
-          </div>
+        <div className="relative rounded-[2rem] border-4 border-ink bg-gradient-to-br from-jam via-violet to-chai p-6 shadow-[10px_10px_0_#2a1408] overflow-hidden">
+  <div className="noise-overlay" />
 
-          <div className="relative mt-6">
-            <StickerCloud
-              stickers={[
-                { id: "s1", label: "retro nights", className: "left-0 top-0 bg-lime" },
-                { id: "s2", label: "movie yappers", className: "right-6 top-6 bg-chai" },
-                { id: "s3", label: "board game goblins", className: "left-12 top-20 bg-blush" },
-                { id: "s4", label: "new friends", className: "right-0 top-32 bg-aqua" },
-              ]}
-            />
-          </div>
+  {/* Header */}
+  <div className="relative z-10">
+    <p className="font-script text-3xl text-cream">
+      Tonight's vibe
+    </p>
 
-          <div className="absolute -bottom-5 -right-3 rotate-[8deg] rounded-xl border-[3px] border-ink bg-cream p-2 shadow-[6px_6px_0_#2a1408]">
-            <Image
-              src="/characters/disco-didi.svg"
-              alt="Retro character sticker"
-              width={90}
-              height={106}
-              className="h-[84px] w-auto"
-            />
-          </div>
-        </motion.div>
+    <p className="font-display text-4xl uppercase text-cream">
+      Chai + Chaos + Comfort
+    </p>
+
+    <p className="mt-3 text-base text-cream/90">
+      Cozy curated events for people who love board games,
+      movies, nostalgia, random conversations, psychology,
+      art and cafe hopping.
+    </p>
+
+    <div className="mt-4 h-px bg-cream/30" />
+
+    <p className="mt-4 text-sm font-bold uppercase tracking-[0.12em] text-chai">
+      Bangalore, India
+    </p>
+  </div>
+
+  {/* Moodboard */}
+  <div className="relative mt-10 h-[420px]">
+
+    {/* Selfie */}
+    <div className="absolute left-4 top-0 rotate-[-6deg]">
+      <Image
+        src="/images/founders.jpg"
+        alt=""
+        width={170}
+        height={220}
+        className="rounded-xl border-4 border-cream shadow-lg"
+      />
+    </div>
+
+    {/* Group */}
+    <div className="absolute right-4 top-16 rotate-[4deg]">
+      <Image
+        src="/images/all.jpg"
+        alt=""
+        width={170}
+        height={220}
+        className="rounded-xl border-4 border-cream shadow-lg"
+      />
+    </div>
+
+    {/* Board game */}
+    <div className="absolute left-1/2 top-[180px] -translate-x-1/2 rotate-[2deg]">
+      <Image
+        src="/images/playing.jpg"
+        alt=""
+        width={190}
+        height={140}
+        className="rounded-xl border-4 border-cream shadow-lg"
+      />
+    </div>
+
+    {/* Center Badge */}
+    <div className="absolute left-1/2 top-[145px] -translate-x-1/2 rotate-[-3deg] rounded-full border-2 border-ink bg-cream px-4 py-2 text-xs font-black">
+      proof strangers become friends
+    </div>
+
+    {/* Stats */}
+    <div className="absolute bottom-0 left-1/2 flex -translate-x-1/2 gap-2">
+      <div className="rounded-full border-2 border-ink bg-cream px-3 py-2 text-xs font-black">
+        23 STRANGERS
+      </div>
+
+      <div className="rounded-full border-2 border-ink bg-cream px-3 py-2 text-xs font-black">
+        4 HOURS
+      </div>
+
+      <div className="rounded-full border-2 border-ink bg-cream px-3 py-2 text-xs font-black">
+        1 COMMUNITY
+      </div>
+    </div>
+  </div>
+
+  {/* Floating stickers */}
+  <div className="absolute top-16 left-6 rotate-[-8deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
+    retro nights
+  </div>
+
+  <div className="absolute top-20 right-6 rotate-[5deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
+    movie yappers
+  </div>
+
+  <div className="absolute top-[250px] right-8 rotate-[-4deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
+    new friends
+  </div>
+
+  <div className="absolute top-[220px] left-8 rotate-[4deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
+    board game goblins
+  </div>
+
+</div>
       </div>
     </section>
   );

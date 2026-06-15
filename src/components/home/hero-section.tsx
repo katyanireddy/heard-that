@@ -124,7 +124,7 @@ export function HeroSection({ event }: { event: EventItem }) {
           </div>
         </div>
 
-        <div className="relative rounded-[2rem] border-4 border-ink bg-gradient-to-br from-jam via-violet to-chai p-6 shadow-[10px_10px_0_#2a1408] overflow-hidden">
+        <div className="relative rounded-[2rem] border-0 border-ink bg-gradient-to-br from-jam via-violet to-chai p-6 shadow-[10px_10px_0_#2a1408] overflow-hidden">
   <div className="noise-overlay" />
 
   {/* Header */}
@@ -151,79 +151,102 @@ export function HeroSection({ event }: { event: EventItem }) {
   </div>
 
   {/* Moodboard */}
-  <div className="relative mt-10 h-[420px]">
+<div className="relative mt-8 h-[580px]">
 
-    {/* Selfie */}
-    <div className="absolute left-4 top-0 rotate-[-6deg]">
-      <Image
-        src="/images/founders.jpg"
-        alt=""
-        width={170}
-        height={220}
-        className="rounded-xl border-4 border-cream shadow-lg"
-      />
-    </div>
-
-    {/* Group */}
-    <div className="absolute right-4 top-16 rotate-[4deg]">
-      <Image
-        src="/images/all.jpg"
-        alt=""
-        width={170}
-        height={220}
-        className="rounded-xl border-4 border-cream shadow-lg"
-      />
-    </div>
-
-    {/* Board game */}
-    <div className="absolute left-1/2 top-[180px] -translate-x-1/2 rotate-[2deg]">
-      <Image
-        src="/images/playing.jpg"
-        alt=""
-        width={190}
-        height={140}
-        className="rounded-xl border-4 border-cream shadow-lg"
-      />
-    </div>
-
-    {/* Center Badge */}
-    <div className="absolute left-1/2 top-[145px] -translate-x-1/2 rotate-[-3deg] rounded-full border-2 border-ink bg-cream px-4 py-2 text-xs font-black">
-      proof strangers become friends
-    </div>
-
-    {/* Stats */}
-    <div className="absolute bottom-0 left-1/2 flex -translate-x-1/2 gap-2">
-      <div className="rounded-full border-2 border-ink bg-cream px-3 py-2 text-xs font-black">
-        23 STRANGERS
-      </div>
-
-      <div className="rounded-full border-2 border-ink bg-cream px-3 py-2 text-xs font-black">
-        4 HOURS
-      </div>
-
-      <div className="rounded-full border-2 border-ink bg-cream px-3 py-2 text-xs font-black">
-        1 COMMUNITY
-      </div>
-    </div>
-  </div>
-
-  {/* Floating stickers */}
-  <div className="absolute top-16 left-6 rotate-[-8deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
+  {/* Top Left Sticker */}
+  <div className="absolute left-0 top-4 rotate-[-8deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
     retro nights
   </div>
 
-  <div className="absolute top-20 right-6 rotate-[5deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
+  {/* Top Right Sticker */}
+  <div className="absolute right-0 top-6 rotate-[6deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
     movie yappers
   </div>
 
-  <div className="absolute top-[250px] right-8 rotate-[-4deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
-    new friends
+  {/* Founders */}
+  <div className="absolute left-8 top-16 rotate-[-5deg]">
+    <Image
+      src="/images/founders.jpg"
+      alt=""
+      width={180}
+      height={230}
+      className="rounded-xl border-4 border-cream shadow-xl"
+    />
   </div>
 
-  <div className="absolute top-[220px] left-8 rotate-[4deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
+  {/* Group Photo */}
+  <div className="absolute right-8 top-32 rotate-[4deg]">
+    <Image
+      src="/images/all.jpg"
+      alt=""
+      width={180}
+      height={230}
+      className="rounded-xl border-4 border-cream shadow-xl"
+    />
+  </div>
+
+  {/* Center Message */}
+  <div className="absolute left-1/2 top-[340px] z-20 rotate-[-3deg] rounded-full border-2 border-ink bg-cream px-5 py-3 text-sm font-black shadow-lg">
+    started as strangers • left as friends
+  </div>
+
+  {/* Board Games */}
+  <div className="absolute left-6 top-[320px] rotate-[3deg]">
+    <Image
+      src="/images/playing.jpg"
+      alt=""
+      width={190}
+      height={150}
+      className="rounded-xl border-4 border-cream shadow-xl"
+    />
+  </div>
+
+  {/* Extra Photo 1 */}
+  <div className="absolute right-8 top-[420px] rotate-[-4deg]">
+    <Image
+      src="/images/e2.jpg"
+      alt=""
+      width={170}
+      height={140}
+      className="rounded-xl border-4 border-cream shadow-xl"
+    />
+  </div>
+
+  {/* Extra Photo 2 */}
+  <div className="absolute left-1/2 top-[520px] -translate-x-1/2 rotate-[2deg]">
+    <Image
+      src="/images/e1.jpg"
+      alt=""
+      width={170}
+      height={140}
+      className="rounded-xl border-4 border-cream shadow-xl"
+    />
+  </div>
+
+  {/* Bottom Stickers */}
+  <div className="absolute left-8 bottom-1 rotate-[5deg] rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black">
     board game goblins
   </div>
 
+  <div className="absolute right-8 bottom-0 rotate-[-5deg] rounded-full border-2 border-ink bg-cream px-3 text-xs font-black">
+    new friends
+  </div>
+
+  {/* Bottom Community Strip */}
+  <div className="absolute left-1/2 top-[730px] -translate-x-1/2 flex gap-3 z-20">
+  <div className="rounded-full border-2 border-ink bg-cream px-4 py-2 text-xs font-black">
+    🎲 board games
+  </div>
+
+  <div className="rounded-full border-2 border-ink bg-cream px-4 py-2 text-xs font-black">
+    ☕ chai talks
+  </div>
+
+  <div className="rounded-full border-2 border-ink bg-cream px-4 py-2 text-xs font-black">
+    🎬 movie nights
+  </div>
+</div>
+</div>
 </div>
       </div>
     </section>

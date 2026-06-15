@@ -68,7 +68,7 @@ export function HeroSection({ event }: { event: EventItem }) {
               Browse Upcoming Events
             </Link>
             <a
-              href="https://chat.whatsapp.com"
+              href="https://chat.whatsapp.com/CaV0E4v0Ja60kXTeFkH9FB?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGnCfq7HCx8sOsIeWab2xggrlOWjHp2myzKlysigIsHDKSw9e779zuZ-fBkCys_aem_zXLKYf7m9fbJM5EGFo2J8g"
               target="_blank"
               rel="noreferrer"
               className="rounded-full border-[3px] border-ink bg-aqua px-6 py-3 text-sm font-black uppercase tracking-wide shadow-[5px_5px_0_#2a1408] transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"

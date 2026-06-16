@@ -215,20 +215,20 @@ export const nostalgiaItems = [
 
 export const founders = [
   {
-    name: "Aarohi",
+    name: "Tanisha",
     bio: "Psychology student, movie hoarder, and board game instigator.",
     interests: ["sitcoms", "literature", "art", "cafes"],
     image:
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=80",
-    social: "https://instagram.com",
+      "/images/tanisha.jpeg",
+    social: "https://www.instagram.com/tanishaaaaa_._/",
   },
   {
-    name: "Niharika",
+    name: "Aaliyaah",
     bio: "Psychology student, nostalgia researcher, and philosophy chatterbox.",
     interests: ["books", "nostalgia", "movies", "community"],
     image:
-      "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=700&q=80",
-    social: "https://instagram.com",
+      "/images/alliya.jpeg",
+    social: "https://www.instagram.com/aaliyaahfatima/",
   },
 ];
 

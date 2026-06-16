@@ -25,7 +25,7 @@ export default function AboutPage() {
                 alt={founder.name}
                 width={900}
                 height={700}
-                className="h-72 w-full border-b-4 border-ink object-cover"
+                className="h-110 w-full border-b-4 border-ink object-cover"
               />
               <div className="p-5">
                 <h3 className="font-display text-3xl uppercase leading-tight">{founder.name}</h3>
@@ -75,7 +75,7 @@ export default function AboutPage() {
         <section className="mt-8 rounded-[1.3rem] border-4 border-ink bg-cream p-5 shadow-[8px_8px_0_#2a1408]">
           <h3 className="font-display text-3xl uppercase">Slide Into Our Inbox</h3>
           <p className="mt-2 text-sm font-semibold">Email: hello@heardthat.in</p>
-          <p className="text-sm font-semibold">Instagram: @heardthat.community</p>
+          <p className="text-sm font-semibold">Instagram: @heard._.that</p>
         </section>
       </div>
     </main>

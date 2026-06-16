@@ -14,7 +14,8 @@ const initialState = {
   error: "",
   success: "",
 };
-
+import { useRouter } from "next/navigation";
+import { deleteMemoryAction } from "@/lib/server-actions";
 
 function SaveButton() {
   const { pending } = useFormStatus();
@@ -38,20 +39,22 @@ export function MemberDashboard({
   joinedEvents: EventItem[];
   myMemories: any[];
  }) {
+  const router = useRouter();
   const [state, action] = useActionState(updateMyVibesAction, initialState);
   const [showUpload, setShowUpload] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 const [caption, setCaption] = useState("");
 const [eventName, setEventName] = useState("");
 const handleUpload = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  console.log("UPLOAD CLICKED");
-
   if (!file) {
     alert("Select a photo first");
     return;
   }
+
+  setUploading(true);
 
   try {
     console.log("file", file);
@@ -75,23 +78,29 @@ const handleUpload = async (e: React.FormEvent) => {
     console.log("supabase data", data);
     console.log("supabase error", error);
 
-  if (error) throw error;
-
-alert("Memory submitted for review!");
+if (error) throw error;
+alert("✅ Memory submitted!");
 
 setFile(null);
 setCaption("");
 setEventName("");
 setShowUpload(false);
 
-window.location.reload();
+router.refresh();
 
+document
+  .getElementById("my-memories-list")
+  ?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
   } catch (err) {
     console.error("UPLOAD ERROR:", err);
     alert("Upload failed");
+  } finally {
+    setUploading(false);
   }
 };
-
 
   return (
     <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
@@ -169,6 +178,7 @@ window.location.reload();
             ))}
           </div>
         </section>
+    
         <section className="rounded-[1.3rem] border-4 border-ink bg-aqua p-5 shadow-[8px_8px_0_#2a1408]">
   <div className="flex items-center justify-between">
     <h3 className="font-display text-3xl uppercase">
@@ -239,39 +249,43 @@ window.location.reload();
   ))}
 </select>
 
-        
+       
       </div>
 
       <button
-        type="submit"
-        className="rounded-full border-[3px] border-ink bg-jam px-5 py-2 text-xs font-black uppercase text-cream shadow-[4px_4px_0_#2a1408]"
-      >
-        Submit For Approval
-      </button>
+  type="submit"
+  disabled={uploading}
+  className="rounded-full border-[3px] border-ink bg-jam px-5 py-2 text-xs font-black uppercase text-cream shadow-[4px_4px_0_#2a1408]"
+>
+  {uploading
+    ? "Submitting..."
+    : "Submit For Approval"}
+</button>
     </form>
   )}
 
-  <div className="mt-4 grid gap-3 md:grid-cols-2">
+<div className="mt-4 grid gap-4 lg:grid-cols-2">
   {myMemories?.map((memory) => (
     <article
       key={memory.id}
       className="rounded-xl border-[3px] border-ink bg-chai p-3"
     >
-       <img
-  src={memory.image_url}
-  alt={memory.event_name}
-  className="h-60 w-full object-cover"
-/>
+      <img
+        src={memory.image_url}
+        alt={memory.event_name}
+        className="h-56 w-full rounded-lg object-cover"
+      />
 
-<p className="mt-2 font-bold">
-  {memory.event_name}
-</p>
+      <h4 className="mt-3 text-xl font-bold">
+        {memory.event_name}
+      </h4>
 
-<p className="text-sm text-ink/70">
-  {memory.caption}
-</p>
+      <p className="mt-1 text-sm text-ink/70">
+        {memory.caption}
+      </p>
+
       <p
-        className={`font-semibold ${
+        className={`mt-2 font-semibold ${
           memory.status === "approved"
             ? "text-green-700"
             : memory.status === "rejected"
@@ -285,6 +299,24 @@ window.location.reload();
           ? "Rejected"
           : "Submitted"}
       </p>
+
+      <form
+        action={deleteMemoryAction}
+        className="mt-3"
+      >
+        <input
+          type="hidden"
+          name="memoryId"
+          value={memory.id}
+        />
+
+        <button
+          type="submit"
+          className="rounded-full border-2 border-ink bg-blush px-4 py-2 text-xs font-black uppercase"
+        >
+          Delete
+        </button>
+      </form>
     </article>
   ))}
 </div>

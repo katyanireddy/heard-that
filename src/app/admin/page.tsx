@@ -8,6 +8,15 @@ import { getBookings, getEvents } from "@/lib/events-store";
 import { adminDeleteCommunityNoteAction, adminDeleteEventAction } from "@/lib/server-actions";
 import { getSession } from "@/lib/session";
 import { formatDateTime } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
+import Image from "next/image";
+import {
+  approveMemoryAction,
+  rejectMemoryAction,
+  deleteMemoryAction,
+} from "@/lib/server-actions";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+
 
 export default async function AdminPage() {
   const session = await getSession();
@@ -20,6 +29,21 @@ export default async function AdminPage() {
     getInquiries(),
     getSentEmailLog(),
   ];
+
+
+const { data: pendingMemories, error } = await supabaseAdmin
+  .from("gallery_submissions")
+  .select("*")
+  .eq("status", "pending");
+
+console.log("PENDING:", pendingMemories);
+console.log("ERROR:", error);
+
+const { data: approvedMemories } = await supabaseAdmin
+  .from("gallery_submissions")
+  .select("*")
+  .eq("status", "approved")
+  .order("created_at", { ascending: false });
 
   return (
     <main className="px-4 py-12 md:px-8">
@@ -135,6 +159,138 @@ export default async function AdminPage() {
             </div>
           </div>
         </section>
+        <section className="rounded-[1.3rem] border-4 border-ink bg-aqua p-5 shadow-[8px_8px_0_#2a1408]">
+  <div className="flex items-center justify-between">
+    <h3 className="font-display text-3xl uppercase">
+      Gallery Manager
+    </h3>
+
+    <span className="rounded-full border-2 border-ink bg-jam px-3 py-1 text-xs font-black uppercase text-cream">
+      {pendingMemories?.length || 0} Pending
+    </span>
+  </div>
+
+  <p className="mt-2 text-sm font-semibold">
+    Review community memories before publishing.
+  </p>
+
+  <div className="mt-4 space-y-4">
+    
+    {pendingMemories?.map((memory) => (
+  <article
+    key={memory.id}
+    className="rounded-xl border-[3px] border-ink bg-cream p-4"
+  >
+    <div className="flex gap-4">
+
+      <Image
+        src={memory.image_url}
+        alt=""
+        width={120}
+        height={120}
+        className="h-28 w-28 rounded-lg object-cover border-2 border-ink"
+      />
+
+      <div className="flex-1">
+
+        <p className="text-xs font-black uppercase text-jam">
+          Uploaded by {memory.user_name}
+        </p>
+
+        <h4 className="mt-1 text-lg font-bold">
+          {memory.event_name}
+        </h4>
+
+        <p className="text-sm">
+          {memory.caption}
+        </p>
+
+        <div className="mt-3 flex gap-2">
+
+          
+
+            <form action={approveMemoryAction}>
+  <input
+    type="hidden"
+    name="memoryId"
+    value={memory.id}
+  />
+
+  <button
+    type="submit"
+    className="rounded-full border-2 border-ink bg-lime px-4 py-2 text-xs font-black uppercase"
+  >
+    ✓ Approve
+  </button>
+</form>
+          
+<form action={rejectMemoryAction}>
+  <input
+    type="hidden"
+    name="memoryId"
+    value={memory.id}
+  />
+
+  <button
+    type="submit"
+    className="rounded-full border-2 border-ink bg-blush px-4 py-2 text-xs font-black uppercase"
+  >
+    ✕ Reject
+  </button>
+</form>
+
+        </div>
+
+      </div>
+    </div>
+  </article>
+))}
+  
+
+  </div>
+</section>
+<section className="rounded-[1.3rem] border-4 border-ink bg-cream p-5 shadow-[8px_8px_0_#2a1408]">
+  <h3 className="font-display text-3xl uppercase">
+    Published Memories
+  </h3>
+
+  <div className="mt-4 grid gap-3 md:grid-cols-3">
+  {approvedMemories?.map((memory) => (
+    <article
+      key={memory.id}
+      className="rounded-xl border-[3px] border-ink bg-chai p-3"
+    >
+         <img
+  src={memory.image_url}
+  alt={memory.event_name}
+  className="h-60 w-full object-cover"
+/>
+
+      <p className="mt-2 text-sm font-bold">
+        {memory.event_name}
+      </p>
+
+      <p className="text-xs text-ink/70">
+        by {memory.user_name}
+      </p>
+      <form action={deleteMemoryAction}>
+  <input
+    type="hidden"
+    name="memoryId"
+    value={memory.id}
+  />
+
+  <button
+    type="submit"
+    className="mt-2 rounded-full border-2 border-ink bg-blush px-3 py-1 text-xs font-black uppercase"
+  >
+    Delete
+  </button>
+</form>
+    </article>
+  ))}
+</div>
+</section>
       </div>
     </main>
   );

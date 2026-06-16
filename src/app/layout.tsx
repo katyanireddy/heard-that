@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { CursorGlow } from "@/components/motion/cursor-glow";
 import { PageTransition } from "@/components/motion/page-transition";
 import "./globals.css";
+import { WhatsAppFloat } from "@/components/ui/whatsapp-float";
 
 export const metadata: Metadata = {
   title: "Heard That? | Bangalore Community",
@@ -24,6 +25,7 @@ export default function RootLayout({
         <SiteHeader />
         <PageTransition>{children}</PageTransition>
         <SiteFooter />
+        <WhatsAppFloat />
       </body>
     </html>
   );

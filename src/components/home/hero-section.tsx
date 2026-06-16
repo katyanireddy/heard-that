@@ -82,6 +82,7 @@ export function HeroSection({ event }: { event: EventItem }) {
 </p>
 
 
+
           <div className="mt-4 flex flex-wrap gap-2">
             {socialLinks.map((social) => (
               <a

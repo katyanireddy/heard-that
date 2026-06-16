@@ -61,6 +61,15 @@ export function SiteFooter() {
           </Link>
         </div>
       </div>
+      <div className="mt-10 border-t-2 border-cream/20 pt-4 text-center text-sm font-bold text-cream">
+  Built by Katyani Reddy ✦ Need a website for your business? 
+  <a
+    href="https://wa.me/7691833047"
+    className="ml-2 underline"
+  >
+    Let's talk →
+  </a>
+</div>
     </footer>
   );
 }

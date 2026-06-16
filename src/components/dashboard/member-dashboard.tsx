@@ -7,11 +7,14 @@ import { galleryMemories, vibes } from "@/lib/data";
 import { updateMyVibesAction } from "@/lib/server-actions";
 import { AppSession, EventItem } from "@/lib/types";
 import { formatDateTime } from "@/lib/utils";
-
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { uploadMemory } from "@/lib/upload-memory";
 const initialState = {
   error: "",
   success: "",
 };
+
 
 function SaveButton() {
   const { pending } = useFormStatus();
@@ -26,8 +29,69 @@ function SaveButton() {
   );
 }
 
-export function MemberDashboard({ session, joinedEvents }: { session: AppSession; joinedEvents: EventItem[] }) {
+export function MemberDashboard({
+  session,
+  joinedEvents,
+  myMemories,
+}: {
+  session: AppSession;
+  joinedEvents: EventItem[];
+  myMemories: any[];
+ }) {
   const [state, action] = useActionState(updateMyVibesAction, initialState);
+  const [showUpload, setShowUpload] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+const [caption, setCaption] = useState("");
+const [eventName, setEventName] = useState("");
+const handleUpload = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  console.log("UPLOAD CLICKED");
+
+  if (!file) {
+    alert("Select a photo first");
+    return;
+  }
+
+  try {
+    console.log("file", file);
+    console.log("caption", caption);
+    console.log("event", eventName);
+
+    const imageUrl = await uploadMemory(file);
+
+    console.log("image uploaded:", imageUrl);
+
+    const { data, error } = await supabase
+      .from("gallery_submissions")
+      .insert({
+        image_url: imageUrl,
+        caption,
+        event_name: eventName,
+        user_name: session.name,
+        status: "pending",
+      });
+
+    console.log("supabase data", data);
+    console.log("supabase error", error);
+
+  if (error) throw error;
+
+alert("Memory submitted for review!");
+
+setFile(null);
+setCaption("");
+setEventName("");
+setShowUpload(false);
+
+window.location.reload();
+
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err);
+    alert("Upload failed");
+  }
+};
+
 
   return (
     <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
@@ -105,6 +169,126 @@ export function MemberDashboard({ session, joinedEvents }: { session: AppSession
             ))}
           </div>
         </section>
+        <section className="rounded-[1.3rem] border-4 border-ink bg-aqua p-5 shadow-[8px_8px_0_#2a1408]">
+  <div className="flex items-center justify-between">
+    <h3 className="font-display text-3xl uppercase">
+      My Memories
+    </h3>
+
+   <button
+  type="button"
+  onClick={() => setShowUpload(!showUpload)}
+  className="rounded-full border-[3px] border-ink bg-lime px-4 py-2 text-xs font-black uppercase shadow-[4px_4px_0_#2a1408]"
+>
+  + Upload Memory
+</button>
+  </div>
+
+  {showUpload && (
+<form
+  onSubmit={handleUpload}
+  className="mt-4 rounded-xl border-[3px] border-ink bg-cream p-4 space-y-3"
+>      <div>
+        <label className="text-xs font-black uppercase">
+          Upload Photo
+        </label>
+
+        <input
+  type="file"
+  accept="image/*"
+  onChange={(e) => {
+    if (e.target.files?.[0]) {
+      setFile(e.target.files[0]);
+    }
+  }}
+  className="mt-1 w-full rounded-lg border-2 border-ink p-2"
+/>
+      </div>
+
+      <div>
+        <label className="text-xs font-black uppercase">
+          Caption
+        </label>
+
+        <textarea
+  value={caption}
+  onChange={(e) => setCaption(e.target.value)}
+  placeholder="Met strangers. Left with friends."
+  className="mt-1 w-full rounded-lg border-2 border-ink p-2"
+/>
+      </div>
+
+      <div>
+        <label className="text-xs font-black uppercase">
+          Event
+        </label>
+        <select
+  value={eventName}
+  onChange={(e) => setEventName(e.target.value)}
+  className="mt-1 w-full rounded-lg border-2 border-ink p-2"
+>
+  <option value="">Select Event</option>
+
+  {joinedEvents.map((event) => (
+    <option
+      key={event.id}
+      value={event.title}
+    >
+      {event.title}
+    </option>
+  ))}
+</select>
+
+        
+      </div>
+
+      <button
+        type="submit"
+        className="rounded-full border-[3px] border-ink bg-jam px-5 py-2 text-xs font-black uppercase text-cream shadow-[4px_4px_0_#2a1408]"
+      >
+        Submit For Approval
+      </button>
+    </form>
+  )}
+
+  <div className="mt-4 grid gap-3 md:grid-cols-2">
+  {myMemories?.map((memory) => (
+    <article
+      key={memory.id}
+      className="rounded-xl border-[3px] border-ink bg-chai p-3"
+    >
+       <img
+  src={memory.image_url}
+  alt={memory.event_name}
+  className="h-60 w-full object-cover"
+/>
+
+<p className="mt-2 font-bold">
+  {memory.event_name}
+</p>
+
+<p className="text-sm text-ink/70">
+  {memory.caption}
+</p>
+      <p
+        className={`font-semibold ${
+          memory.status === "approved"
+            ? "text-green-700"
+            : memory.status === "rejected"
+            ? "text-red-700"
+            : "text-orange-600"
+        }`}
+      >
+        {memory.status === "approved"
+          ? "Published"
+          : memory.status === "rejected"
+          ? "Rejected"
+          : "Submitted"}
+      </p>
+    </article>
+  ))}
+</div>
+</section>
       </main>
     </div>
   );

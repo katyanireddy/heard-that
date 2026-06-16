@@ -4,9 +4,8 @@ export const heardThatIntro =
   "Heard That? is a Bangalore community run by two psychology students who plan cozy, curated experiences where strangers become friends through games, stories, movies, nostalgia, and unfiltered conversations.";
 
 export const socialLinks = [
-  { label: "Instagram", href: "https://instagram.com" },
-  { label: "WhatsApp", href: "https://chat.whatsapp.com" },
-  { label: "YouTube", href: "https://youtube.com" },
+  { label: "Instagram", href: "https://www.instagram.com/heard._.that/" },
+  { label: "WhatsApp", href: "https://chat.whatsapp.com/CaV0E4v0Ja60kXTeFkH9FB?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGnCfq7HCx8sOsIeWab2xggrlOWjHp2myzKlysigIsHDKSw9e779zuZ-fBkCys_aem_zXLKYf7m9fbJM5EGFo2J8g" },
 ];
 
 export const vibes: Array<{
@@ -244,31 +243,27 @@ export const collaborationTypes = [
 
 export const mapSpots = [
   {
-    id: "map_1",
-    name: "Koramangala Cozy Circuit",
-    kind: "community space",
-    x: 28,
-    y: 52,
-  },
+  id: "1",
+  kind: "Community Space",
+  name: "Koramangala Cozy Circuit",
+  description: "Movie nights, chai talks and spontaneous friendships."
+},
   {
-    id: "map_2",
-    name: "Indiranagar Game Corner",
-    kind: "board game cafe",
-    x: 58,
-    y: 38,
-  },
+  id: "2",
+  kind: "Board Game Cafe",
+  name: "Indiranagar Game Corner",
+  description: "Where strangers become board game rivals."
+},
   {
-    id: "map_3",
-    name: "JP Nagar Chai Deck",
-    kind: "late-night circle",
-    x: 34,
-    y: 74,
-  },
+  id: "3",
+  kind: "Late Night Circle",
+  name: "JP Nagar Chai Deck",
+  description: "Long conversations over endless chai."
+},
   {
-    id: "map_4",
-    name: "MG Road Nostalgia Hub",
-    kind: "event venue",
-    x: 62,
-    y: 56,
-  },
+  id: "4",
+  kind: "Event Venue",
+  name: "MG Road Nostalgia Hub",
+  description: "Retro events, music and collective nostalgia."
+},
 ];

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { mapSpots } from "@/lib/data";
 import { SectionTitle } from "@/components/ui/section-title";
+import Image from "next/image";
 
 export function MapSection() {
   const [activeId, setActiveId] = useState(mapSpots[0]?.id);

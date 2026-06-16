@@ -12,6 +12,8 @@ import { clearSession, getSession, setSession } from "@/lib/session";
 import { EventItem, VibeTag } from "@/lib/types";
 import { attachJoinedEvent, createUser, verifyUserCredentials, updateUserVibes } from "@/lib/user-store";
 import { toSlug } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 type FormState = {
   error?: string;
@@ -314,4 +316,58 @@ export async function findEventByIdOrSlug(value: string) {
 
   const all = (await import("@/lib/events-store")).getEvents();
   return all.find((event) => event.slug === value) ?? null;
+}
+
+
+export async function approveMemoryAction(formData: FormData) {
+  const id = String(formData.get("memoryId"));
+
+  const { error } = await supabase
+    .from("gallery_submissions")
+    .update({
+      status: "approved",
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/gallery");
+}
+
+export async function rejectMemoryAction(formData: FormData) {
+  const id = String(formData.get("memoryId"));
+
+  const { error } = await supabase
+    .from("gallery_submissions")
+    .update({
+      status: "rejected",
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/gallery");
+}
+export async function deleteMemoryAction(
+  formData: FormData
+) {
+  const memoryId = String(
+    formData.get("memoryId")
+  );
+
+  if (!memoryId) return;
+
+  await supabaseAdmin
+    .from("gallery_submissions")
+    .delete()
+    .eq("id", memoryId);
+
+  revalidatePath("/admin");
+  revalidatePath("/gallery");
 }

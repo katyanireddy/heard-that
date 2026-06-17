@@ -14,6 +14,7 @@ import { attachJoinedEvent, createUser, verifyUserCredentials, updateUserVibes }
 import { toSlug } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import QRCode from "qrcode";
 
 
 
@@ -112,6 +113,7 @@ export async function updateMyVibesAction(_: FormState, formData: FormData): Pro
 }
 
 export async function bookEventAction(_: FormState, formData: FormData): Promise<FormState> {
+
   const eventId = String(formData.get("eventId") ?? "");
   const attendeeName = String(formData.get("attendeeName") ?? "").trim();
   const attendeeEmail = String(formData.get("attendeeEmail") ?? "").trim().toLowerCase();
@@ -167,9 +169,6 @@ const result = await createBooking({
   amount: event.priceInr,
 });
 
-if ("error" in result) {
-  return { error: result.error };
-}
 
   if ("error" in result) {
     return { error: result.error };
@@ -178,24 +177,101 @@ if ("error" in result) {
   if (session?.id) {
     attachJoinedEvent(session.id, eventId);
   }
+  const qrCode = await QRCode.toDataURL(
+  JSON.stringify({
+    ticket: result.booking.ticketCode,
+    event: result.event.title,
+    email: attendeeEmail,
+  })
+);
 
   await sendConfirmationEmail({
     to: attendeeEmail,
     subject: `Heard That? Ticket Confirmed • ${result.event.title}`,
     html: `
-      <div style="font-family: Arial, sans-serif; background: #fff6e5; padding: 24px; border: 2px dashed #2e1800;">
-        <h2 style="margin:0 0 10px;">You're in 🎉</h2>
-        <p>Hi ${attendeeName}, your booking for <b>${result.event.title}</b> is confirmed.</p>
-        <p><b>Ticket code:</b> ${result.booking.ticketCode}</p>
-        <p><b>Date:</b> ${new Date(result.event.dateTime).toLocaleString("en-IN", {
-          dateStyle: "full",
-          timeStyle: "short",
-          timeZone: "Asia/Kolkata",
-        })}</p>
-        <p><b>Venue:</b> ${result.event.location}</p>
-        <p>Bring your cozy vibe. We saved your spot.</p>
-      </div>
+    
+<div style="
+background:#fff6e5;
+padding:30px;
+font-family:Arial,sans-serif;
+">
+
+<h2 style="margin-bottom:20px;">
+🎉 You're In!
+</h2>
+
+<p>
+Hi ${attendeeName},
+your booking for
+<b>${result.event.title}</b>
+is confirmed.
+</p>
+
+<div style="
+background:#ffffff;
+border-radius:20px;
+padding:20px;
+border:3px dashed #6b2f2f;
+max-width:500px;
+margin-top:20px;
+">
+
+<h2>🎟 Heard That? Ticket</h2>
+
+<p>
+<b>Event:</b>
+${result.event.title}
+</p>
+
+<p>
+<b>Venue:</b>
+${result.event.location}
+</p>
+
+<p>
+<b>Date:</b>
+${new Date(result.event.dateTime).toLocaleString("en-IN", {
+  dateStyle: "full",
+  timeStyle: "short",
+  timeZone: "Asia/Kolkata",
+})}
+</p>
+
+<div style="margin:20px 0;">
+<img
+  src="cid:ticketqr@heardthat"
+  width="220"
+  alt="Ticket QR"
+/>
+</div>
+
+<div style="
+background:#f5f5f5;
+padding:12px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+border-radius:12px;
+">
+${result.booking.ticketCode}
+</div>
+
+</div>
+
+<p style="margin-top:20px;">
+Bring your cozy vibe.
+We saved your spot ✨
+</p>
+
+</div>
+
     `,
+    attachments: [
+  {
+    filename: "ticket-qr.png",
+    path: qrCode,
+  },
+],
   });
 
   revalidatePath("/");
@@ -253,7 +329,7 @@ export async function createCollaborationAction(_: FormState, formData: FormData
     return { error: "Pick one of the available collaboration types." };
   }
 
-  createInquiry({ name, email, org, collaborationType, message });
+  await createInquiry({ name, email, org, collaborationType, message });
 
   revalidatePath("/collab");
   revalidatePath("/admin");
@@ -345,7 +421,7 @@ export async function adminDeleteCommunityNoteAction(formData: FormData) {
   if (!session || session.role !== "admin") return;
   const noteId = String(formData.get("noteId") ?? "");
   if (!noteId) return;
-  deleteCommunityNote(noteId);
+  await deleteCommunityNote(noteId);
   revalidatePath("/community");
   revalidatePath("/admin");
 }

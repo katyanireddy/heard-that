@@ -1,11 +1,12 @@
 import "server-only";
 
-import nodemailer from "nodemailer";
 
-export type EmailPayload = {
+import nodemailer from "nodemailer";
+ export type EmailPayload = {
   to: string;
   subject: string;
   html: string;
+  attachments?: any[];
 };
 
 const sentEmails: Array<{
@@ -32,12 +33,13 @@ function createTransporter() {
 
 export async function sendConfirmationEmail(payload: EmailPayload) {
   const transporter = createTransporter();
-  await transporter.sendMail({
-    from: process.env.MAIL_FROM ?? "Heard That? <hello@heardthat.in>",
-    to: payload.to,
-    subject: payload.subject,
-    html: payload.html,
-  });
+await transporter.sendMail({
+  from: process.env.MAIL_FROM ?? "Heard That? <hello@heardthat.in>",
+  to: payload.to,
+  subject: payload.subject,
+  html: payload.html,
+  attachments: payload.attachments ?? [],
+});
 
   sentEmails.unshift({ to: payload.to, subject: payload.subject, sentAt: new Date().toISOString() });
 }

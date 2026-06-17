@@ -3,30 +3,28 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { CommunityNote } from "@/lib/types";
 
-const notes: CommunityNote[] = [
-  {
-    id: "note_001",
-    author: "Anonymous",
-    message: "Came alone for trivia night, left with three new cafe plans.",
-    anonymous: true,
-    createdAt: new Date("2026-05-20T20:30:00+05:30").toISOString(),
-  },
-  {
-    id: "note_002",
-    author: "Aditi",
-    message: "Please do another old cartoon theme night. I am ready with snacks.",
-    anonymous: false,
-    createdAt: new Date("2026-05-21T18:20:00+05:30").toISOString(),
-  },
-];
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
-export function getCommunityNotes() {
+export async function getCommunityNotes() {
+  const { data, error } = await supabaseAdmin
+    .from("community_notes")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  return data;
+}
+
+/*export function getCommunityNotes() {
   return [...notes].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
-}
-
-export function createCommunityNote(input: {
+}*/
+export async function createCommunityNote(input: {
   author: string;
   message: string;
   anonymous?: boolean;
@@ -41,11 +39,25 @@ export function createCommunityNote(input: {
     createdAt: new Date().toISOString(),
   };
 
-  notes.unshift(note);
-  return note;
+const { data, error } = await supabaseAdmin
+  .from("community_notes")
+  .insert({
+    author: note.author,
+    message: note.message,
+    anonymous: note.anonymous,
+    image: note.image,
+  })
+  .select();
+
+  console.log("COMMUNITY DATA =", data);
+console.log("COMMUNITY ERROR =", error);
+
+return note;
 }
 
-export function deleteCommunityNote(id: string) {
-  const index = notes.findIndex((note) => note.id === id);
-  if (index >= 0) notes.splice(index, 1);
+export async function deleteCommunityNote(id: string) {
+  await supabaseAdmin
+    .from("community_notes")
+    .delete()
+    .eq("id", id);
 }

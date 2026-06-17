@@ -224,12 +224,12 @@ export async function createCommunityNoteAction(_: FormState, formData: FormData
     return { error: "Please add a note before posting." };
   }
 
-  createCommunityNote({
-    author: session.name,
-    message,
-    anonymous,
-    image: image || undefined,
-  });
+await createCommunityNote({
+  author: session.name,
+  message,
+  anonymous,
+  image: image || undefined,
+});
 
   revalidatePath("/community");
   revalidatePath("/");

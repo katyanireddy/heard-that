@@ -56,6 +56,9 @@ export type Booking = {
   note?: string;
   createdAt: string;
   ticketCode: string;
+  amount?: number;
+  paymentId?: string;
+  paymentStatus?: string;
 };
 
 export type CollaborationInquiry = {

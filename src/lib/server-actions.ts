@@ -15,6 +15,7 @@ import { toSlug } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
+
 type FormState = {
   error?: string;
   success?: string;
@@ -115,9 +116,18 @@ export async function bookEventAction(_: FormState, formData: FormData): Promise
   const attendeeEmail = String(formData.get("attendeeEmail") ?? "").trim().toLowerCase();
   const note = String(formData.get("note") ?? "").trim();
   const selectedVibes = parseVibes(formData);
-  const paymentId = String(
+const paymentId = String(
   formData.get("paymentId") ?? ""
 );
+
+const event = await getEventById(eventId);
+
+if (!event) {
+  return {
+    error: "Event not found.",
+  };
+}
+
 if (!paymentId) {
   return {
     error: "Payment not completed.",
@@ -153,6 +163,7 @@ const result = await createBooking({
   note,
   userId: session?.id,
   paymentId,
+  amount: event.priceInr,
 });
 
 if ("error" in result) {

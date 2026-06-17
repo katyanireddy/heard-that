@@ -16,7 +16,7 @@ import {
   deleteMemoryAction,
 } from "@/lib/server-actions";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-
+import BookingsTable from "@/components/admin/bookings-table";
 
 export default async function AdminPage() {
   const session = await getSession();
@@ -45,6 +45,18 @@ const { data: approvedMemories } = await supabaseAdmin
   .select("*")
   .eq("status", "approved")
   .order("created_at", { ascending: false });
+  const totalBookings = bookings.length;
+
+const totalRevenue = bookings
+  .filter(
+    (booking) =>
+      booking.paymentStatus === "paid"
+  )
+  .reduce(
+    (sum, booking) =>
+      sum + (booking.amount || 0),
+    0
+  );
 
   return (
     <main className="px-4 py-12 md:px-8">
@@ -80,29 +92,55 @@ const { data: approvedMemories } = await supabaseAdmin
           </div>
         </section>
 
+<div className="grid gap-4 md:grid-cols-4">
+
+  <div className="rounded-xl border-4 border-ink bg-lime p-4">
+    <p className="text-xs font-black uppercase">
+      Total Bookings
+    </p>
+    <p className="text-3xl font-black">
+      {totalBookings}
+    </p>
+  </div>
+
+  <div className="rounded-xl border-4 border-ink bg-blush p-4">
+    <p className="text-xs font-black uppercase">
+      Revenue
+    </p>
+    <p className="text-3xl font-black">
+      ₹{totalRevenue}
+    </p>
+  </div>
+
+  <div className="rounded-xl border-4 border-ink bg-chai p-4">
+    <p className="text-xs font-black uppercase">
+      Events
+    </p>
+    <p className="text-3xl font-black">
+      {events.length}
+    </p>
+  </div>
+
+  <div className="rounded-xl border-4 border-ink bg-aqua p-4">
+    <p className="text-xs font-black uppercase">
+      Pending Memories
+    </p>
+    <p className="text-3xl font-black">
+      {pendingMemories?.length || 0}
+    </p>
+  </div>
+
+</div>
+
         <section className="rounded-[1.3rem] border-4 border-ink bg-aqua p-5 shadow-[8px_8px_0_#2a1408]">
+          
           <h3 className="font-display text-3xl uppercase">Registrations & Tickets</h3>
+
           <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[620px] border-collapse text-sm">
-              <thead>
-                <tr>
-                  <th className="border-2 border-ink bg-cream px-3 py-2 text-left">Attendee</th>
-                  <th className="border-2 border-ink bg-cream px-3 py-2 text-left">Event</th>
-                  <th className="border-2 border-ink bg-cream px-3 py-2 text-left">Ticket</th>
-                  <th className="border-2 border-ink bg-cream px-3 py-2 text-left">Vibes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.map((booking) => (
-                  <tr key={booking.id}>
-                    <td className="border-2 border-ink bg-white px-3 py-2">{booking.attendeeName}</td>
-                    <td className="border-2 border-ink bg-white px-3 py-2">{booking.eventTitle}</td>
-                    <td className="border-2 border-ink bg-white px-3 py-2 font-black">{booking.ticketCode}</td>
-                    <td className="border-2 border-ink bg-white px-3 py-2">{booking.vibes.join(", ") || "-"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+           <BookingsTable
+  bookings={bookings}
+  events={events}
+/>
           </div>
         </section>
 

@@ -11,13 +11,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing required booking fields." }, { status: 400 });
   }
 
-  const result = createBooking({
-    eventId,
-    attendeeName,
-    attendeeEmail,
-    vibes: (Array.isArray(vibes) ? vibes : []) as VibeTag[],
-    note,
-  });
+const result = await createBooking({
+  eventId,
+  attendeeName,
+  attendeeEmail,
+  vibes,
+  note,
+  paymentId: "manual",
+  amount: 0,
+});
 
   if ("error" in result) {
     return NextResponse.json({ error: result.error }, { status: 400 });

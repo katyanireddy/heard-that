@@ -78,17 +78,25 @@ export async function getBookings() {
     return [];
   }
 
-  return data.map((booking) => ({
-    id: booking.id,
-    eventId: booking.event_id,
-    attendeeName: booking.attendee_name,
-    attendeeEmail: booking.attendee_email,
-    vibes: booking.vibes || [],
-    note: booking.note,
-    ticketCode: booking.ticket_code,
-    createdAt: booking.created_at,
-    eventTitle: booking.event_title || "Event",
-  }));
+return data.map((booking) => ({
+  id: booking.id,
+  eventId: booking.event_id,
+  attendeeName: booking.attendee_name,
+  attendeeEmail: booking.attendee_email,
+  eventTitle: booking.event_title || "Event",
+  ticketCode: booking.ticket_code,
+
+  
+  paymentId: booking.payment_id,
+  paymentStatus: booking.payment_status,
+
+  amount: booking.amount,
+
+  vibes: booking.vibes || [],
+
+  note: booking.note,
+  createdAt: booking.created_at,
+}));
 }
 
 export async function createBooking(input: {
@@ -99,7 +107,9 @@ export async function createBooking(input: {
   note?: string;
   userId?: string;
   paymentId: string;
+  amount: number;
 }) {
+  
   const event = await getEventById(input.eventId);
 
   if (!event)
@@ -135,6 +145,7 @@ export async function createBooking(input: {
 
     payment_id: input.paymentId,
     payment_status: "paid",
+    amount: input.amount,
   });
 
   // UPDATE SEATS

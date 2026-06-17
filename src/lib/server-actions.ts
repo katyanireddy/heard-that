@@ -7,13 +7,14 @@ import { collaborationTypes } from "@/lib/data";
 import { createInquiry } from "@/lib/collab-store";
 import { createCommunityNote, deleteCommunityNote } from "@/lib/community-store";
 import { sendConfirmationEmail } from "@/lib/email";
-import { createBooking, deleteEvent, getEventById, upsertEvent } from "@/lib/events-store";
+import { createBooking, deleteEvent, getEventById, upsertEvent, getEvents} from "@/lib/events-store";
 import { clearSession, getSession, setSession } from "@/lib/session";
 import { EventItem, VibeTag } from "@/lib/types";
 import { attachJoinedEvent, createUser, verifyUserCredentials, updateUserVibes } from "@/lib/user-store";
 import { toSlug } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+
 
 
 type FormState = {

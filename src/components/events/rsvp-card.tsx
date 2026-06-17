@@ -4,11 +4,14 @@ import { useActionState } from "react";
 import { Loader2 } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import { vibes } from "@/lib/data";
-import { bookEventAction } from "@/lib/server-actions";
 import { EventItem } from "@/lib/types";
 import { TicketReveal } from "@/components/events/ticket-reveal";
 import { useState } from "react";
 import { useRef } from "react";
+import {
+  bookEventAction,
+  checkBookingAction,
+} from "@/lib/server-actions";
 
 const initialState = {
   error: "",
@@ -39,6 +42,11 @@ const [note, setNote] = useState("");
 const [ticketCode, setTicketCode] = useState("");
 const [success, setSuccess] = useState("");
 const formRef = useRef<HTMLFormElement>(null);
+const [error, setError] = useState("");
+const isSoldOut = event.seatsLeft <= 0;
+const [isPaying, setIsPaying] =
+  useState(false);
+
 
 
 async function handlePayment() {
@@ -46,29 +54,117 @@ async function handlePayment() {
   "KEY =",
   process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
 );
+ setIsPaying(true);
+setError("");
+  setSuccess("");
   console.log("Payment Start");
 
   if (!(window as any).Razorpay) {
-    alert("Razorpay SDK not loaded");
-    return;
+  setIsPaying(false);
+  setError("Razorpay SDK not loaded");
+  return;
+}
+const alreadyBooked =
+  await checkBookingAction(
+    event.id,
+    email
+  );
+
+if (alreadyBooked) {
+  setIsPaying(false);
+
+  formRef.current?.reset();
+
+  setName("");
+  setEmail("");
+  setNote("");
+
+  setTicketCode("");
+  setSuccess("");
+
+  setError(
+    "You have already booked this event."
+  );
+
+  return;
+}
+  const orderRes = await fetch(
+  "/api/create-order",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      amount: event.priceInr,
+    }),
   }
+);
+
+const order = await orderRes.json();
+
+console.log("ORDER =", order);
 
   const options = {
     key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
 
-    amount: event.priceInr * 100,
+    amount: order.amount,
 
     currency: "INR",
+
+    order_id: order.id,
 
     name: "Heard That?",
 
     description: event.title,
+    modal: {
+    ondismiss: function () {
+      setIsPaying(false);
+      setError("⚠️ Payment cancelled");
+    },
+  },
 
 handler: async function (response: any) {
 
+  const verifyRes = await fetch(
+    "/api/verify-payment",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        razorpay_order_id:
+          response.razorpay_order_id,
+
+        razorpay_payment_id:
+          response.razorpay_payment_id,
+
+        razorpay_signature:
+          response.razorpay_signature,
+      }),
+    }
+  );
+
+  const verify =
+    await verifyRes.json();
+
+    
+if (!verify.success) {
+  setIsPaying(false);
+  setError("❌ Payment verification failed");
+  return;
+}
+
+  // booking code yahan
+
+
 const formData = new FormData();
 
-formData.append("eventId", event.id);
+formData.append(
+  "eventId",
+  event.id
+);
 
 formData.append(
   "attendeeName",
@@ -90,10 +186,23 @@ formData.append(
   response.razorpay_payment_id
 );
 
+
+formData.append(
+  "orderId",
+  response.razorpay_order_id
+);
+  
   const result = await bookEventAction(
     initialState,
     formData
   );
+  if (result.error) {
+  setIsPaying(false);
+  setError(result.error);
+  return;
+}
+
+  
 
   
 
@@ -101,8 +210,12 @@ if (result.ticketCode) {
   setTicketCode(result.ticketCode);
 }
 if (result.success) {
+  setError("");
   setSuccess(result.success);
 }
+
+ setIsPaying(false);
+
 formRef.current?.reset();
 
   setName("");
@@ -114,6 +227,16 @@ formRef.current?.reset();
 
 
   const rzp = new (window as any).Razorpay(options);
+
+
+rzp.on("payment.failed", function (response: any) {
+  console.log(response);
+  
+  setSuccess("");
+  setTicketCode("");
+  setIsPaying(false);
+  setError("❌ Payment Failed. Please try again.");
+});
 
   rzp.open();
 }
@@ -188,16 +311,35 @@ formRef.current?.reset();
           />
         </div>
 
-        <button
+       <button
   type="button"
+  disabled={
+  isSoldOut || isPaying
+}
   onClick={handlePayment}
-  className="inline-flex items-center justify-center rounded-full border-[3px] border-ink bg-jam px-5 py-2 text-sm font-black uppercase tracking-wide text-cream shadow-[4px_4px_0_#2a1408]"
+  className="inline-flex items-center justify-center rounded-full border-[3px] border-ink bg-jam px-5 py-2 text-sm font-black uppercase tracking-wide text-cream shadow-[4px_4px_0_#2a1408] disabled:opacity-50"
 >
-  Get My Ticket
+  {
+  isPaying
+    ? "Processing..."
+    : isSoldOut
+    ? "Sold Out"
+    : "Pay & Get My Ticket"
+}
 </button>
+        {state.error ? (
+  <p className="rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-700">
+    {state.error}
+  </p>
+) : null}
 
-        {state.error ? <p className="rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-700">{state.error}</p> : null}
-       {success ? (
+{error ? (
+  <p className="rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-700">
+    {error}
+  </p>
+) : null}
+
+{success ? (
   <p className="rounded-lg bg-lime px-3 py-2 text-sm font-bold">
     {success}
   </p>

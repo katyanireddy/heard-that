@@ -131,6 +131,20 @@ if (!paymentId) {
   
 const session = await getSession();
 
+const { data: existingBooking } =
+  await supabaseAdmin
+    .from("bookings")
+    .select("id")
+    .eq("event_id", eventId)
+    .eq("attendee_email", attendeeEmail)
+    .maybeSingle();
+
+if (existingBooking) {
+  return {
+    error: "You have already booked this event.",
+  };
+}
+
 const result = await createBooking({
   eventId,
   attendeeName,
@@ -406,3 +420,16 @@ export async function deleteMemoryAction(
   revalidatePath("/gallery");
 }
 
+export async function checkBookingAction(
+  eventId: string,
+  attendeeEmail: string
+) {
+  const { data } = await supabaseAdmin
+    .from("bookings")
+    .select("id")
+    .eq("event_id", eventId)
+    .eq("attendee_email", attendeeEmail)
+    .maybeSingle();
+
+  return !!data;
+}

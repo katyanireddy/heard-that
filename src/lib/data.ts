@@ -246,24 +246,32 @@ export const mapSpots = [
   id: "1",
   kind: "Community Space",
   name: "Koramangala Cozy Circuit",
+  x: 12,
+  y: 30,
   description: "Movie nights, chai talks and spontaneous friendships."
 },
   {
   id: "2",
   kind: "Board Game Cafe",
   name: "Indiranagar Game Corner",
+  x: 78,
+  y: 22,
   description: "Where strangers become board game rivals."
 },
   {
   id: "3",
   kind: "Late Night Circle",
   name: "JP Nagar Chai Deck",
+  x: 30,
+  y: 70,
   description: "Long conversations over endless chai."
 },
   {
   id: "4",
   kind: "Event Venue",
   name: "MG Road Nostalgia Hub",
+  x: 70,
+  y: 65,
   description: "Retro events, music and collective nostalgia."
 },
 ];

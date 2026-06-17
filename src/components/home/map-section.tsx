@@ -20,6 +20,12 @@ export function MapSection() {
 
         <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="relative min-h-[360px] overflow-hidden rounded-[1.2rem] border-[3px] border-ink bg-cream">
+            <Image
+  src="/images/mapheard.jpg"
+  alt="Heard That Community Map"
+  fill
+  className="object-cover"
+/>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,143,74,0.25),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(127,83,216,0.2),transparent_35%)]" />
             {mapSpots.map((spot, idx) => (
               <motion.button
@@ -28,7 +34,8 @@ export function MapSection() {
                 onMouseEnter={() => setActiveId(spot.id)}
                 onClick={() => setActiveId(spot.id)}
                 className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
-                style={{ left: "50%", top: "50%" }}
+                style={{  left: `${spot.x}%`,
+  top: `${spot.y}%`, }}
                 animate={{ y: [0, -6, 0] }}
                 transition={{ duration: 2 + idx * 0.3, repeat: Infinity, ease: "easeInOut" }}
               >

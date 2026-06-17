@@ -79,6 +79,18 @@ export async function signupAction(_: FormState, formData: FormData): Promise<Fo
   if (password.length < 6) {
     return { error: "Use at least 6 characters for the password." };
   }
+  const { data: existingUser } =
+  await supabaseAdmin
+    .from("users")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+
+if (existingUser) {
+  return {
+    error: "Email already registered. Please login.",
+  };
+}
 
   const result = createUser({ name, email, password, vibes, interests: vibes });
   if ("error" in result) {
@@ -520,4 +532,33 @@ export async function checkBookingAction(
     .maybeSingle();
 
   return !!data;
+}
+
+export async function forgotPasswordAction(
+  _: any,
+  formData: FormData
+) {
+  const email = String(
+    formData.get("email") ?? ""
+  ).trim();
+
+  const { error } =
+    await supabase.auth.resetPasswordForEmail(
+      email,
+      {
+        redirectTo:
+          "http://localhost:3000/reset-password",
+      }
+    );
+
+  if (error) {
+    return {
+      error: error.message,
+    };
+  }
+
+  return {
+    success:
+      "Password reset link sent to your email.",
+  };
 }

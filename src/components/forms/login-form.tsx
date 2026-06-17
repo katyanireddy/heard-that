@@ -66,8 +66,18 @@ export function LoginForm() {
           Create account
         </Link>
       </p>
-      <p className="text-xs text-ink/70">Demo member: member@heardthat.in / friendsoffline</p>
-      <p className="text-xs text-ink/70">Demo admin: admin@heardthat.in / chaiandchaos</p>
+      <div className="mt-2 text-right">
+  <Link
+    href="/forgot-password"
+    className="text-sm underline"
+  >
+    Forgot Password?
+  </Link>
+</div>
+<p className="text-xs text-neutral-600">
+  Admin Login:
+  admin@heardthat.in
+</p>
     </form>
   );
 }

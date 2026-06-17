@@ -5,6 +5,8 @@ import { CursorGlow } from "@/components/motion/cursor-glow";
 import { PageTransition } from "@/components/motion/page-transition";
 import "./globals.css";
 import { WhatsAppFloat } from "@/components/ui/whatsapp-float";
+import Script from "next/script";
+
 
 export const metadata: Metadata = {
   title: "Heard That? | Bangalore Community",
@@ -26,6 +28,10 @@ export default function RootLayout({
         <PageTransition>{children}</PageTransition>
         <SiteFooter />
         <WhatsAppFloat />
+        <Script
+  src="https://checkout.razorpay.com/v1/checkout.js"
+  strategy="beforeInteractive"
+/>
       </body>
     </html>
   );

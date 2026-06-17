@@ -13,7 +13,7 @@ export default async function DashboardPage() {
   const user = findUserById(session.id);
   if (!user) redirect("/login");
 
-  const events = getEvents();
+  const events = await getEvents();
   const joinedEvents = events.filter((event) => user.joinedEventIds.includes(event.id));
   const { data: myMemories } = await supabaseAdmin
   .from("gallery_submissions")

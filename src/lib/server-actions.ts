@@ -115,20 +115,35 @@ export async function bookEventAction(_: FormState, formData: FormData): Promise
   const attendeeEmail = String(formData.get("attendeeEmail") ?? "").trim().toLowerCase();
   const note = String(formData.get("note") ?? "").trim();
   const selectedVibes = parseVibes(formData);
+  const paymentId = String(
+  formData.get("paymentId") ?? ""
+);
+if (!paymentId) {
+  return {
+    error: "Payment not completed.",
+  };
+}
 
   if (!eventId || !attendeeName || !attendeeEmail) {
     return { error: "Please complete your name and email." };
   }
 
-  const session = await getSession();
-  const result = createBooking({
-    eventId,
-    attendeeName,
-    attendeeEmail,
-    note,
-    vibes: selectedVibes,
-    userId: session?.id,
-  });
+  
+const session = await getSession();
+
+const result = await createBooking({
+  eventId,
+  attendeeName,
+  attendeeEmail,
+  vibes: selectedVibes,
+  note,
+  userId: session?.id,
+  paymentId,
+});
+
+if ("error" in result) {
+  return { error: result.error };
+}
 
   if ("error" in result) {
     return { error: result.error };
@@ -275,7 +290,24 @@ export async function adminUpsertEventAction(_: FormState, formData: FormData): 
       "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
   };
 
-  upsertEvent(item);
+  const { error } = await supabaseAdmin
+  .from("events")
+  .insert({
+    title,
+    slug: toSlug(title),
+    description,
+    date_time: dateTime,
+    location,
+    theme,
+    price: priceInr,
+    seats_total: seatsTotal,
+    seats_left: seatsLeft,
+  });
+
+if (error) {
+  console.error(error);
+  return { error: error.message };
+}
   revalidatePath("/");
   revalidatePath("/events");
   revalidatePath("/admin");
@@ -293,9 +325,9 @@ export async function adminDeleteCommunityNoteAction(formData: FormData) {
 }
 
 export async function fetchEventForRoute(slug: string) {
-  return getEventById(slug) ?? null;
+  const events = await getEvents();
+  return events.find((event) => event.slug === slug) ?? null;
 }
-
 export async function checkAdmin() {
   const session = await getSession();
   return session?.role === "admin";
@@ -314,9 +346,11 @@ export async function findEventByIdOrSlug(value: string) {
   const match = events.find(Boolean);
   if (match) return match;
 
-  const all = (await import("@/lib/events-store")).getEvents();
+  const all = await (await import("@/lib/events-store")).getEvents();
   return all.find((event) => event.slug === value) ?? null;
 }
+
+
 
 
 export async function approveMemoryAction(formData: FormData) {

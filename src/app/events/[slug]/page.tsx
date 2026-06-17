@@ -6,7 +6,8 @@ import { formatDateTime } from "@/lib/utils";
 
 export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const event = getEvents().find((item) => item.slug === slug);
+  const events = await getEvents();
+const event = events.find((item) => item.slug === slug);
 
   if (!event) notFound();
 

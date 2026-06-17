@@ -7,12 +7,15 @@ import { vibes } from "@/lib/data";
 import { bookEventAction } from "@/lib/server-actions";
 import { EventItem } from "@/lib/types";
 import { TicketReveal } from "@/components/events/ticket-reveal";
+import { useState } from "react";
+import { useRef } from "react";
 
 const initialState = {
   error: "",
   success: "",
   ticketCode: "",
 };
+
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -30,10 +33,98 @@ function SubmitButton() {
 
 export function RsvpCard({ event }: { event: EventItem }) {
   const [state, action] = useActionState(bookEventAction, initialState);
+  const [name, setName] = useState("");
+const [email, setEmail] = useState("");
+const [note, setNote] = useState("");
+const [ticketCode, setTicketCode] = useState("");
+const [success, setSuccess] = useState("");
+const formRef = useRef<HTMLFormElement>(null);
+
+
+async function handlePayment() {
+ console.log(
+  "KEY =",
+  process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
+);
+  console.log("Payment Start");
+
+  if (!(window as any).Razorpay) {
+    alert("Razorpay SDK not loaded");
+    return;
+  }
+
+  const options = {
+    key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+
+    amount: event.priceInr * 100,
+
+    currency: "INR",
+
+    name: "Heard That?",
+
+    description: event.title,
+
+handler: async function (response: any) {
+
+const formData = new FormData();
+
+formData.append("eventId", event.id);
+
+formData.append(
+  "attendeeName",
+  name
+);
+
+formData.append(
+  "attendeeEmail",
+  email
+);
+
+formData.append(
+  "note",
+  note
+);
+
+formData.append(
+  "paymentId",
+  response.razorpay_payment_id
+);
+
+  const result = await bookEventAction(
+    initialState,
+    formData
+  );
+
+  
+
+if (result.ticketCode) {
+  setTicketCode(result.ticketCode);
+}
+if (result.success) {
+  setSuccess(result.success);
+}
+formRef.current?.reset();
+
+  setName("");
+  setEmail("");
+  setNote("");
+
+},
+  }
+
+
+  const rzp = new (window as any).Razorpay(options);
+
+  rzp.open();
+}
 
   return (
     <div className="space-y-5">
-      <form action={action} className="space-y-4 rounded-[1.3rem] border-4 border-ink bg-cream p-5 shadow-[8px_8px_0_#2a1408]">
+      <form
+  ref={formRef}
+  action={action}
+  className="space-y-4 rounded-[1.3rem] border-4 border-ink bg-cream p-5 shadow-[8px_8px_0_#2a1408]"
+>
         <input type="hidden" name="eventId" value={event.id} />
 
         <div>
@@ -46,6 +137,8 @@ export function RsvpCard({ event }: { event: EventItem }) {
             required
             className="mt-1 w-full rounded-xl border-2 border-ink bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet"
             placeholder="Name"
+            value={name}
+  onChange={(e) => setName(e.target.value)}
           />
         </div>
 
@@ -60,6 +153,8 @@ export function RsvpCard({ event }: { event: EventItem }) {
             required
             className="mt-1 w-full rounded-xl border-2 border-ink bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet"
             placeholder="you@example.com"
+            value={email}
+  onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
@@ -88,16 +183,33 @@ export function RsvpCard({ event }: { event: EventItem }) {
             rows={3}
             className="mt-1 w-full rounded-xl border-2 border-ink bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet"
             placeholder="Food preferences, accessibility, or just say hi"
+            value={note}
+  onChange={(e) => setNote(e.target.value)}
           />
         </div>
 
-        <SubmitButton />
+        <button
+  type="button"
+  onClick={handlePayment}
+  className="inline-flex items-center justify-center rounded-full border-[3px] border-ink bg-jam px-5 py-2 text-sm font-black uppercase tracking-wide text-cream shadow-[4px_4px_0_#2a1408]"
+>
+  Get My Ticket
+</button>
 
         {state.error ? <p className="rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-700">{state.error}</p> : null}
-        {state.success ? <p className="rounded-lg bg-lime px-3 py-2 text-sm font-bold">{state.success}</p> : null}
+       {success ? (
+  <p className="rounded-lg bg-lime px-3 py-2 text-sm font-bold">
+    {success}
+  </p>
+) : null}
       </form>
 
-      {state.ticketCode ? <TicketReveal ticketCode={state.ticketCode} eventTitle={event.title} /> : null}
+      {ticketCode ? (
+  <TicketReveal
+    ticketCode={ticketCode}
+    eventTitle={event.title}
+  />
+) : null}
     </div>
   );
 }

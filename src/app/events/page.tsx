@@ -5,7 +5,7 @@ import { getEvents } from "@/lib/events-store";
 import { formatDateTime } from "@/lib/utils";
 
 export default async function EventsPage() {
-  const allEvents = getEvents();
+  const allEvents = await getEvents();
 
   return (
     <main className="px-4 py-12 md:px-8">

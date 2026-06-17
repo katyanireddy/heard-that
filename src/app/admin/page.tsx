@@ -22,13 +22,14 @@ export default async function AdminPage() {
   const session = await getSession();
   if (!session || session.role !== "admin") redirect("/login");
 
-  const [events, bookings, notes, inquiries, emails] = [
+  const [events, bookings, notes, inquiries, emails] =
+  await Promise.all([
     getEvents(),
     getBookings(),
     getCommunityNotes(),
     getInquiries(),
     getSentEmailLog(),
-  ];
+  ]);
 
 
 const { data: pendingMemories, error } = await supabaseAdmin

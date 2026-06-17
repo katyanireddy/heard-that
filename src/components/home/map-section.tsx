@@ -28,7 +28,7 @@ export function MapSection() {
                 onMouseEnter={() => setActiveId(spot.id)}
                 onClick={() => setActiveId(spot.id)}
                 className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
-                style={{ left: `${spot.x}%`, top: `${spot.y}%` }}
+                style={{ left: "50%", top: "50%" }}
                 animate={{ y: [0, -6, 0] }}
                 transition={{ duration: 2 + idx * 0.3, repeat: Infinity, ease: "easeInOut" }}
               >

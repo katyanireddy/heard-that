@@ -10,11 +10,11 @@ import { sendConfirmationEmail } from "@/lib/email";
 import { createBooking, deleteEvent, getEventById, upsertEvent, getEvents} from "@/lib/events-store";
 import { clearSession, getSession, setSession } from "@/lib/session";
 import { EventItem, VibeTag } from "@/lib/types";
-import { attachJoinedEvent, createUser, verifyUserCredentials, updateUserVibes } from "@/lib/user-store";
 import { toSlug } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import QRCode from "qrcode";
+
 
 
 
@@ -42,6 +42,7 @@ function parseVibes(formData: FormData) {
 }
 
 export async function loginAction(_: FormState, formData: FormData): Promise<FormState> {
+  console.log("LOGIN ACTION HIT");
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "").trim();
 
@@ -49,21 +50,46 @@ export async function loginAction(_: FormState, formData: FormData): Promise<For
     return { error: "Please enter both email and password." };
   }
 
-  const user = verifyUserCredentials(email, password);
-  if (!user) {
-    return { error: "Incorrect email or password." };
-  }
-
-  await setSession({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    vibes: user.vibes,
-    interests: user.interests,
+ const { data, error } =
+  await supabase.auth.signInWithPassword({
+    email,
+    password,
   });
 
-  redirect(user.role === "admin" ? "/admin" : "/dashboard");
+if (error) {
+  return {
+    error: error.message,
+  };
+}
+const { data: profile } =
+  await supabaseAdmin
+    .from("profiles")
+    .select("*")
+    .eq("id", data.user.id)
+    .single();
+
+    console.log("AUTH USER:", data.user);
+console.log("PROFILE:", profile);
+if (!profile) {
+  return {
+    error: "Profile not found. Please contact admin.",
+  };
+}
+
+await setSession({
+  id: data.user.id,
+  name: profile.name,
+  email: profile.email,
+  role: profile.role,
+  vibes: profile.vibes ?? [],
+  interests: profile.vibes ?? [],
+});
+
+  redirect(
+  profile.role === "admin"
+    ? "/admin"
+    : "/dashboard"
+);
 }
 
 export async function signupAction(_: FormState, formData: FormData): Promise<FormState> {
@@ -86,27 +112,45 @@ export async function signupAction(_: FormState, formData: FormData): Promise<Fo
     .eq("email", email)
     .maybeSingle();
 
+
 if (existingUser) {
   return {
     error: "Email already registered. Please login.",
   };
 }
 
-  const result = createUser({ name, email, password, vibes, interests: vibes });
-  if ("error" in result) {
-    return { error: result.error };
-  }
-
-  await setSession({
-    id: result.user.id,
-    name: result.user.name,
-    email: result.user.email,
-    role: result.user.role,
-    vibes: result.user.vibes,
-    interests: result.user.interests,
+  const { data, error } =
+  await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        name,
+      },
+    },
   });
 
-  redirect("/dashboard");
+if (error) {
+  return {
+    error: error.message,
+  };
+}
+
+if (data.user) {
+  await supabaseAdmin
+  .from("profiles")
+  .insert({
+    id: data.user.id,
+    name,
+    email,
+    role: "member",
+    vibes,
+  });
+}
+return {
+  success:
+    "Account created successfully. Please login.",
+};
 }
 
 export async function logoutAction() {
@@ -114,16 +158,43 @@ export async function logoutAction() {
   redirect("/");
 }
 
-export async function updateMyVibesAction(_: FormState, formData: FormData): Promise<FormState> {
+export async function updateMyVibesAction(
+  _: FormState,
+  formData: FormData
+): Promise<FormState> {
   const session = await getSession();
-  if (!session) return { error: "Please log in first." };
-  const selected = parseVibes(formData);
-  updateUserVibes(session.id, selected);
-  await setSession({ ...session, vibes: selected, interests: selected });
-  revalidatePath("/dashboard");
-  return { success: "Vibe profile updated." };
-}
 
+  if (!session) {
+    return {
+      error: "Please log in first.",
+    };
+  }
+
+  const selected = parseVibes(formData);
+
+  const { error } = await supabaseAdmin
+    .from("profiles")
+    .update({
+      vibes: selected,
+    })
+    .eq("id", session.id);
+
+  if (error) {
+    return {
+      error: error.message,
+    };
+  }
+
+  await setSession({
+    ...session,
+    vibes: selected,
+    interests: selected,
+  });
+
+  return {
+    success: "Vibes updated successfully.",
+  };
+}
 export async function bookEventAction(_: FormState, formData: FormData): Promise<FormState> {
 
   const eventId = String(formData.get("eventId") ?? "");
@@ -187,8 +258,14 @@ const result = await createBooking({
   }
 
   if (session?.id) {
-    attachJoinedEvent(session.id, eventId);
-  }
+  await supabaseAdmin
+    .from("user_events")
+    .insert({
+      user_id: session.id,
+      event_id: eventId,
+    });
+}
+
   const qrCode = await QRCode.toDataURL(
   JSON.stringify({
     ticket: result.booking.ticketCode,
@@ -547,7 +624,7 @@ export async function forgotPasswordAction(
       email,
       {
         redirectTo:
-          "http://localhost:3000/reset-password",
+`${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`
       }
     );
 

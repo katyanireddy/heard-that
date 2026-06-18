@@ -66,14 +66,16 @@ const handleUpload = async (e: React.FormEvent) => {
     console.log("image uploaded:", imageUrl);
 
     const { data, error } = await supabase
-      .from("gallery_submissions")
-      .insert({
-        image_url: imageUrl,
-        caption,
-        event_name: eventName,
-        user_name: session.name,
-        status: "pending",
-      });
+  .from("gallery_submissions")
+  .insert({
+    image_url: imageUrl,
+    caption,
+    event_name: eventName,
+    user_id: session.id,
+    user_name: session.name,
+    status: "pending",
+  });
+
 
     console.log("supabase data", data);
     console.log("supabase error", error);

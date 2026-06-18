@@ -4,15 +4,16 @@ import { useActionState } from "react";
 import { forgotPasswordAction } from "@/lib/server-actions";
 
 const initialState = {
-  error: "",
-  success: "",
+  error: undefined,
+  success: undefined,
 };
 
 export default function ForgotPasswordPage() {
-  const [state, action] = useActionState(
-    forgotPasswordAction,
-    initialState
-  );
+  const [state, action] = useActionState<any, FormData>(
+  forgotPasswordAction,
+  {}
+);
+
 
   return (
     <main className="px-4 py-16">

@@ -17,7 +17,7 @@ function PostButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-full border-[3px] border-ink bg-jam px-5 py-2 text-sm font-black uppercase tracking-wide text-cream shadow-[4px_4px_0_#2a1408] transition hover:-translate-y-0.5 disabled:opacity-60"
+      className="block ml-auto rounded-full border-[3px] border-ink bg-jam px-5 py-2 text-sm font-black uppercase tracking-wide text-cream shadow-[4px_4px_0_#2a1408] transition hover:-translate-y-0.5 disabled:opacity-60"
     >
       {pending ? "Posting..." : "Pin Note"}
     </button>
@@ -68,7 +68,7 @@ export function CommunityWall({ notes, canPost }: { notes: CommunityNote[]; canP
 
             <PostButton />
             {state.error ? <p className="rounded-lg bg-red-100 px-3 py-2 text-sm font-semibold text-red-700">{state.error}</p> : null}
-            {state.success ? <p className="rounded-lg bg-lime px-3 py-2 text-sm font-semibold">{state.success}</p> : null}
+            {state.success ? <p className="rounded-lg bg-lime px-3 py-2 text-sm font-semibold" >{state.success}</p> : null}
           </form>
         ) : (
           <p className="mt-4 rounded-xl border-2 border-ink bg-blush p-3 text-sm font-semibold">
@@ -78,7 +78,10 @@ export function CommunityWall({ notes, canPost }: { notes: CommunityNote[]; canP
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        {notes.map((note, index) => (
+        {notes.map((note, index) => {
+  console.log("NOTE IMAGE:", note.image);
+
+  return (
           <article
             key={note.id}
             className="relative rounded-[1rem] border-[3px] border-ink bg-[color:var(--note-color)] p-4 shadow-[5px_5px_0_#2a1408]"
@@ -98,7 +101,9 @@ export function CommunityWall({ notes, canPost }: { notes: CommunityNote[]; canP
               />
             ) : null}
           </article>
-        ))}
+  )
+})}
+        
       </div>
     </div>
   );

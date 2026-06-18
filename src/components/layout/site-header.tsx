@@ -47,11 +47,13 @@ export async function SiteHeader() {
           {session ? (
             <>
               <Link
-                href={session.role === "admin" ? "/admin" : "/dashboard"}
-                className="rounded-full border-2 border-ink bg-violet px-3 py-1 text-sm font-bold text-cream transition hover:-translate-y-0.5"
-              >
-                {session.role === "admin" ? "Organizer" : "Dashboard"}
-              </Link>
+  href={session.role === "admin" ? "/admin" : "/dashboard"}
+  className="rounded-full border-2 border-ink bg-violet px-3 py-1 text-sm font-bold text-cream transition hover:-translate-y-0.5"
+>
+  {session.role === "admin"
+    ? "Admin"
+    : "Dashboard"}
+</Link>
               <form action={logoutAction}>
                 <button
                   type="submit"

@@ -426,12 +426,32 @@ export async function createCollaborationAction(_: FormState, formData: FormData
   return { success: "Inquiry sent. Team Heard That? will reply soon." };
 }
 
-export async function adminDeleteEventAction(formData: FormData) {
+export async function adminDeleteEventAction(
+  formData: FormData
+) {
   const session = await getSession();
-  if (!session || session.role !== "admin") return;
-  const id = String(formData.get("eventId") ?? "");
+
+  if (!session || session.role !== "admin") {
+    return;
+  }
+
+  const id = String(
+    formData.get("eventId") ?? ""
+  );
+
   if (!id) return;
-  deleteEvent(id);
+
+  const { error } =
+    await supabaseAdmin
+      .from("events")
+      .delete()
+      .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
   revalidatePath("/");
   revalidatePath("/events");
   revalidatePath("/admin");
@@ -612,9 +632,9 @@ export async function checkBookingAction(
 }
 
 export async function forgotPasswordAction(
-  _: any,
+  _: FormState,
   formData: FormData
-) {
+): Promise<FormState> {
   const email = String(
     formData.get("email") ?? ""
   ).trim();

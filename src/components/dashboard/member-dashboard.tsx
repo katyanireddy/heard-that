@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
-import { galleryMemories, vibes } from "@/lib/data";
+import { vibes } from "@/lib/data";
 import { updateMyVibesAction } from "@/lib/server-actions";
 import { AppSession, EventItem } from "@/lib/types";
 import { formatDateTime } from "@/lib/utils";
@@ -168,15 +168,36 @@ document
           </Link>
         </section>
 
+        
         <section className="rounded-[1.3rem] border-4 border-ink bg-cream p-5 shadow-[8px_8px_0_#2a1408]">
-          <h3 className="font-display text-3xl uppercase">Saved Memories</h3>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {galleryMemories.map((memory) => (
-              <article key={memory.id} className="rounded-xl border-[3px] border-ink bg-chai/50 p-3">
-                <p className="text-xs font-black uppercase tracking-wide text-jam">{memory.event}</p>
-                <h4 className="mt-1 text-lg font-bold">{memory.title}</h4>
-                <p className="text-sm">{memory.quote}</p>
-              </article>
+  <h3 className="font-display text-3xl uppercase">
+    Published Memories
+  </h3>
+
+  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+    {myMemories
+      ?.filter(
+        (memory) => memory.status === "approved"
+      )
+      .map((memory) => (
+              <article
+  key={memory.id}
+  className="rounded-xl border-[3px] border-ink bg-chai/50 p-3"
+>
+  <img
+    src={memory.image_url}
+    alt={memory.event_name}
+    className="h-40 w-full rounded-lg object-cover"
+  />
+
+  <h4 className="mt-2 text-lg font-bold">
+    {memory.event_name}
+  </h4>
+
+  <p className="text-sm">
+    {memory.caption}
+  </p>
+</article>
             ))}
           </div>
         </section>
@@ -324,6 +345,7 @@ document
 </div>
 </section>
       </main>
+      
     </div>
   );
 }

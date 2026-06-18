@@ -214,7 +214,11 @@ if (!event) {
     error: "Event not found.",
   };
 }
-
+if (event.is_closed) {
+  return {
+    error: "This event is closed.",
+  };
+}
 if (!paymentId) {
   return {
     error: "Payment not completed.",
@@ -689,5 +693,23 @@ export async function deleteCollaborationAction(
     .delete()
     .eq("id", id);
 
+  revalidatePath("/admin");
+}
+
+export async function closeEventAction(
+  formData: FormData
+) {
+  const eventId = String(
+    formData.get("eventId")
+  );
+
+  await supabaseAdmin
+    .from("events")
+    .update({
+      is_closed: true,
+    })
+    .eq("id", eventId);
+
+  revalidatePath("/events");
   revalidatePath("/admin");
 }

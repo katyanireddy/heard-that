@@ -10,6 +10,31 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
 const event = events.find((item) => item.slug === slug);
 
   if (!event) notFound();
+  if (event.is_closed) {
+  return (
+    <main className="px-4 py-20">
+      <div className="mx-auto max-w-2xl rounded-[2rem] border-4 border-ink bg-cream p-8 text-center shadow-[8px_8px_0_#2a1408]">
+
+        <p className="text-xs font-black uppercase tracking-[0.2em] text-jam">
+          Event Status
+        </p>
+
+        <h1 className="mt-3 font-display text-5xl uppercase">
+          Event Closed
+        </h1>
+
+        <p className="mt-4 text-lg font-semibold">
+          Registrations for <strong>{event.title}</strong> have been closed.
+        </p>
+
+        <p className="mt-2 text-sm opacity-80">
+          This event is no longer accepting RSVPs.
+        </p>
+
+      </div>
+    </main>
+  );
+}
 
   return (
     <main className="px-4 py-12 md:px-8">

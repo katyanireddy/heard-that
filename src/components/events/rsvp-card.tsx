@@ -47,7 +47,19 @@ const isSoldOut = event.seatsLeft <= 0;
 const [isPaying, setIsPaying] =
   useState(false);
 
+if (event.is_closed) {
+  return (
+    <div className="rounded-[1.5rem] border-4 border-ink bg-red-100 p-6 text-center">
+      <h3 className="font-display text-3xl uppercase">
+        Event Closed
+      </h3>
 
+      <p className="mt-2">
+        Registrations are no longer available.
+      </p>
+    </div>
+  );
+}
 
 async function handlePayment() {
  console.log(

@@ -28,6 +28,7 @@ console.log("SERVICE KEY EXISTS =", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
   seatsLeft: event.seats_left,
   theme: event.theme,
   priceInr: event.price,
+  is_closed: event.is_closed,
 
   tags: ["community"],
   mood: "Cozy Conversations",

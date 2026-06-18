@@ -51,11 +51,15 @@ export default async function EventsPage() {
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-black">INR {event.priceInr}</p>
                   <Link
-                    href={`/events/${event.slug}`}
-                    className="rounded-full border-[3px] border-ink bg-jam px-4 py-2 text-xs font-black uppercase tracking-wide text-cream shadow-[4px_4px_0_#2a1408]"
-                  >
-                    RSVP
-                  </Link>
+  href={`/events/${event.slug}`}
+  className={`rounded-full border-2 border-ink px-4 py-2 text-xs font-black uppercase ${
+    event.is_closed
+      ? "bg-red-200"
+      : "bg-jam text-cream"
+  }`}
+>
+  {event.is_closed ? "Closed" : "RSVP"}
+</Link>
                 </div>
               </div>
             </article>

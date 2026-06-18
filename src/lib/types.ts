@@ -24,6 +24,7 @@ export type EventItem = {
   emoji: string;
   priceInr: number;
   coverImage: string;
+  is_closed?: boolean;
 };
 
 export type GalleryMemory = {

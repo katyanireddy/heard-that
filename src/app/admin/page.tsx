@@ -7,6 +7,7 @@ import { getBookings, getEvents } from "@/lib/events-store";
 import { adminDeleteCommunityNoteAction, adminDeleteEventAction } from "@/lib/server-actions";
 import { getSession } from "@/lib/session";
 import { formatDateTime } from "@/lib/utils";
+import { revalidatePath } from "next/cache";
 import {
   deleteCollaborationAction,
 } from "@/lib/server-actions";
@@ -18,6 +19,7 @@ import {
 } from "@/lib/server-actions";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import BookingsTable from "@/components/admin/bookings-table";
+import { closeEventAction } from "@/lib/server-actions";
 
 export default async function AdminPage() {
   const session = await getSession();
@@ -85,17 +87,48 @@ const totalRevenue = bookings
               <article key={event.id} className="rounded-xl border-[3px] border-ink bg-blush p-3">
                 <p className="text-xs font-black uppercase tracking-wide text-jam">{event.theme}</p>
                 <h4 className="font-display text-2xl uppercase leading-tight">{event.title}</h4>
+                {event.is_closed && (
+  <span className="mt-2 inline-block rounded-full border-2 border-ink bg-red-200 px-2 py-1 text-xs font-black uppercase">
+    Closed
+  </span>
+)}
                 <p className="text-sm font-semibold">{formatDateTime(event.dateTime)}</p>
                 <p className="text-sm">{event.seatsLeft}/{event.seatsTotal} spots left</p>
-                <form action={adminDeleteEventAction} className="mt-2">
-                  <input type="hidden" name="eventId" value={event.id} />
-                  <button
-                    type="submit"
-                    className="rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black uppercase tracking-wide"
-                  >
-                    Delete Event
-                  </button>
-                </form>
+                <div className="mt-2 flex gap-2">
+
+{!event.is_closed && (
+  <form action={closeEventAction}>
+    <input
+      type="hidden"
+      name="eventId"
+      value={event.id}
+    />
+
+    <button
+      type="submit"
+      className="rounded-full border-2 border-ink bg-chai px-3 py-1 text-xs font-black uppercase"
+    >
+      Close Event
+    </button>
+  </form>
+)}
+
+  <form action={adminDeleteEventAction}>
+    <input
+      type="hidden"
+      name="eventId"
+      value={event.id}
+    />
+
+    <button
+      type="submit"
+      className="rounded-full border-2 border-ink bg-cream px-3 py-1 text-xs font-black uppercase"
+    >
+      Delete Event
+    </button>
+  </form>
+
+</div>
               </article>
             ))}
           </div>

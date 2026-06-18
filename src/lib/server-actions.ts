@@ -18,6 +18,7 @@ import QRCode from "qrcode";
 
 
 
+
 type FormState = {
   error?: string;
   success?: string;
@@ -418,7 +419,21 @@ export async function createCollaborationAction(_: FormState, formData: FormData
     return { error: "Pick one of the available collaboration types." };
   }
 
-  await createInquiry({ name, email, org, collaborationType, message });
+  const { error } = await supabaseAdmin
+  .from("collaborations")
+  .insert({
+    name,
+    email,
+    org,
+    collaboration_type: collaborationType,
+    message,
+  });
+
+if (error) {
+  return {
+    error: error.message,
+  };
+}
 
   revalidatePath("/collab");
   revalidatePath("/admin");
@@ -658,4 +673,21 @@ export async function forgotPasswordAction(
     success:
       "Password reset link sent to your email.",
   };
+}
+
+export async function deleteCollaborationAction(
+  formData: FormData
+) {
+  const id = String(
+    formData.get("collaborationId")
+  );
+
+  if (!id) return;
+
+  await supabaseAdmin
+    .from("collaborations")
+    .delete()
+    .eq("id", id);
+
+  revalidatePath("/admin");
 }

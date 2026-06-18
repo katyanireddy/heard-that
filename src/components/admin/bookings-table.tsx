@@ -165,9 +165,16 @@ export default function BookingsTable({
               </td>
 
               <td className="border-2 border-ink p-2">
-                {new Date(
-                  booking.createdAt
-                ).toLocaleDateString()}
+                {new Intl.DateTimeFormat(
+  "en-GB",
+  {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }
+).format(
+  new Date(booking.createdAt)
+)}
               </td>
             </tr>
           ))}

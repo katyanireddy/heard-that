@@ -1,14 +1,15 @@
 import { redirect } from "next/navigation";
 import { EventCreateForm } from "@/components/admin/event-create-form";
 import { SectionTitle } from "@/components/ui/section-title";
-import { getInquiries } from "@/lib/collab-store";
 import { getCommunityNotes } from "@/lib/community-store";
 import { getSentEmailLog } from "@/lib/email";
 import { getBookings, getEvents } from "@/lib/events-store";
 import { adminDeleteCommunityNoteAction, adminDeleteEventAction } from "@/lib/server-actions";
 import { getSession } from "@/lib/session";
 import { formatDateTime } from "@/lib/utils";
-import { supabase } from "@/lib/supabase";
+import {
+  deleteCollaborationAction,
+} from "@/lib/server-actions";
 import Image from "next/image";
 import {
   approveMemoryAction,
@@ -22,12 +23,11 @@ export default async function AdminPage() {
   const session = await getSession();
   if (!session || session.role !== "admin") redirect("/login");
 
-  const [events, bookings, notes, inquiries, emails] =
+  const [events, bookings, notes, emails] =
   await Promise.all([
     getEvents(),
     getBookings(),
     getCommunityNotes(),
-    getInquiries(),
     getSentEmailLog(),
   ]);
 
@@ -46,6 +46,15 @@ const { data: approvedMemories } = await supabaseAdmin
   .eq("status", "approved")
   .order("created_at", { ascending: false });
   const totalBookings = bookings.length;
+
+
+    const { data: inquiries } =
+  await supabaseAdmin
+    .from("collaborations")
+    .select("*")
+    .order("created_at", {
+      ascending: false,
+    });
 
 const totalRevenue = bookings
   .filter(
@@ -167,17 +176,60 @@ const totalRevenue = bookings
             <div className="rounded-[1.2rem] border-4 border-ink bg-cream p-4 shadow-[6px_6px_0_#2a1408]">
               <h3 className="font-display text-2xl uppercase">Collaboration Inquiries</h3>
               <div className="mt-3 space-y-2">
-                {inquiries.length ? (
+                {inquiries?.length ? (
                   inquiries.map((item) => (
-                    <article key={item.id} className="rounded-xl border-2 border-ink bg-chai/70 p-3">
-                      <p className="text-xs font-black uppercase tracking-wide text-jam">{item.collaborationType}</p>
-                      <p className="text-sm font-bold">{item.name} • {item.email}</p>
-                      <p className="text-sm">{item.message}</p>
-                    </article>
+                    <article
+  key={item.id}
+  className="rounded-xl border-2 border-ink bg-chai/70 p-3"
+>
+  <p className="text-xs font-black uppercase tracking-wide text-jam">
+    {item.collaboration_type}
+  </p>
+
+  <p className="text-sm font-bold">
+    {item.name} • {item.email}
+  </p>
+
+  {item.org && (
+    <p className="text-xs font-semibold">
+      {item.org}
+    </p>
+  )}
+
+  <p className="text-sm">
+    {item.message}
+  </p>
+  <div className="mt-3 flex gap-2">
+  
+  <a
+    href={`mailto:${item.email}?subject=Heard That Collaboration`}
+    className="rounded-full border-2 border-ink bg-lime px-3 py-1 text-xs font-black uppercase"
+  >
+    Contact
+  </a>
+
+  <form action={deleteCollaborationAction}>
+    <input
+      type="hidden"
+      name="collaborationId"
+      value={item.id}
+    />
+
+    <button
+      type="submit"
+      className="rounded-full border-2 border-ink bg-blush px-3 py-1 text-xs font-black uppercase"
+    >
+      Reject
+    </button>
+  </form>
+
+</div>
+</article>
                   ))
                 ) : (
                   <p className="text-sm font-semibold">No inquiries yet.</p>
                 )}
+                
               </div>
             </div>
 

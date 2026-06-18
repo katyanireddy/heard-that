@@ -11,20 +11,22 @@ export type VibeTag =
 
 export type EventItem = {
   id: string;
-  slug: string;
   title: string;
+  slug: string;
+
+  is_closed?: boolean;
+
   description: string;
   location: string;
   dateTime: string;
   seatsTotal: number;
   seatsLeft: number;
-  tags: string[];
-  mood: string;
-  theme: string;
-  emoji: string;
   priceInr: number;
+  theme: string;
+  mood: string;
+  tags: string[];
+  emoji: string;
   coverImage: string;
-  is_closed?: boolean;
 };
 
 export type GalleryMemory = {

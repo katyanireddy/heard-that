@@ -28,6 +28,7 @@ console.log("SERVICE KEY EXISTS =", !!process.env.SUPABASE_SERVICE_ROLE_KEY);
   seatsLeft: event.seats_left,
   theme: event.theme,
   priceInr: event.price,
+
   is_closed: event.is_closed,
 
   tags: ["community"],
@@ -51,21 +52,24 @@ export async function getEventById(id: string) {
   if (!data) return null;
 
   return {
-    id: data.id,
-    title: data.title,
-    slug: data.slug,
-    description: data.description,
-    location: data.location,
-    dateTime: data.date_time,
-    seatsTotal: data.seats_total,
-    seatsLeft: data.seats_left,
-    theme: data.theme,
-    priceInr: data.price,
-    tags: ["community"],
-    mood: "Cozy Conversations",
-    emoji: "☕",
-    coverImage: "",
-  };
+  id: data.id,
+  title: data.title,
+  slug: data.slug,
+  description: data.description,
+  location: data.location,
+  dateTime: data.date_time,
+  seatsTotal: data.seats_total,
+  seatsLeft: data.seats_left,
+  theme: data.theme,
+  priceInr: data.price,
+
+  is_closed: data.is_closed, // ADD THIS
+
+  tags: ["community"],
+  mood: "Cozy Conversations",
+  emoji: "☕",
+  coverImage: "",
+};
 }
 
 export async function getBookings() {
